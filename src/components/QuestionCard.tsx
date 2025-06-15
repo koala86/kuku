@@ -38,7 +38,7 @@ export default function QuestionCard() {
 
   useEffect(() => {
     setQuestions(generateQuestions());
-    setStartTime(Date.now()); // テスト開始時刻を記録
+    // タイマーは最初の「つぎへ」ボタン押下時に開始されます
   }, []);
 
   useEffect(() => {
@@ -63,6 +63,9 @@ export default function QuestionCard() {
     return <div className="p-4 text-center">ロウディング中...</div>;
 
   const handleNext = () => {
+    if (startTime === null) {
+      setStartTime(Date.now()); // 最初のボタン押下でタイマーを開始
+    }
     const userAns = parseInt(input);
     const isCorrect = userAns === questions[current].answer;
 
