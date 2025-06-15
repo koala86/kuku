@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 type ScoreEntry = {
   date: string; // new Date().toLocaleString() によって保存された日付文字列
   score: number;
+  elapsedTime?: string; // 過去データとの互換性のためオプショナル
 };
 
 export default function HomeHeader() {

@@ -11,12 +11,15 @@ export default function ResultPage() {
   const [wrongAnswers, setWrongAnswers] = useState<
     { q: Question; user: number }[]
   >([]);
+  const [elapsedTime, setElapsedTime] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const detailRaw = localStorage.getItem("scoreDetail");
     if (detailRaw) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const detail = JSON.parse(detailRaw);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { questions, userAnswers } = detail as {
         questions: Question[];
         userAnswers: number[];
@@ -25,11 +28,17 @@ export default function ResultPage() {
         .map((q, i) => ({ q, user: userAnswers[i] }))
         .filter((item) => item.q.answer !== item.user);
       setWrongAnswers(incorrects);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const scoreVal = questions.reduce(
         (acc, q, i) => acc + (userAnswers[i] === q.answer ? 10 : 0),
         0
       );
       setScore(scoreVal);
+    }
+
+    const timeRaw = localStorage.getItem("elapsedTime");
+    if (timeRaw) {
+      setElapsedTime(timeRaw);
     }
   }, []);
 
@@ -37,9 +46,14 @@ export default function ResultPage() {
     <AuthGuard>
       <div className="p-4">
         <h1 className="text-3xl font-bold text-center mb-6">けっか</h1>
-        <p className="text-2xl text-center text-green-600 font-semibold mb-6">
+        <p className="text-2xl text-center text-green-600 font-semibold mb-2">
           てんすう: {score}点
         </p>
+        {elapsedTime && (
+          <p className="text-xl text-center text-gray-700 mb-6">
+            けいかじかん: {elapsedTime}秒
+          </p>
+        )}
 
         {wrongAnswers.length > 0 && (
           <div>

@@ -10,8 +10,9 @@ type Question = {
 };
 
 type ScoreEntry = {
-  date: string; // ISO 날짜 문자열
+  date: string; // new Date().toLocaleString() によって保存された日付文字列
   score: number;
+  elapsedTime: string; // 例: "20.5" (秒)
 };
 
 function generateQuestions(): Question[] {
@@ -81,24 +82,27 @@ export default function QuestionCard() {
       if (startTime) {
         const endTime = Date.now();
         const durationSeconds = (endTime - startTime) / 1000;
-        localStorage.setItem("elapsedTime", durationSeconds.toFixed(1));
+        const elapsedTimeValue = durationSeconds.toFixed(1);
+        localStorage.setItem("elapsedTime", elapsedTimeValue); // 直近の時間を個別に保存 (result/page.tsx, HomeHeader.tsx 用)
+
+        // ScoreEntry にも elapsedTime を含める
+        const storedScores = localStorage.getItem("scores");
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const prevScores: ScoreEntry[] = storedScores
+          ? JSON.parse(storedScores)
+          : [];
+        const newEntry: ScoreEntry = {
+          date: new Date().toLocaleString(),
+          score: finalScore,
+          elapsedTime: elapsedTimeValue,
+        };
+        localStorage.setItem("scores", JSON.stringify([...prevScores, newEntry]));
       }
 
       localStorage.setItem(
         "scoreDetail",
         JSON.stringify({ questions, userAnswers: [...userAnswers, userAns] })
       );
-
-      const storedScores = localStorage.getItem("scores");
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const prevScores: ScoreEntry[] = storedScores
-        ? JSON.parse(storedScores)
-        : [];
-      const newEntry: ScoreEntry = {
-        date: new Date().toLocaleString(), // YYYY-MM-DD
-        score: finalScore,
-      };
-      localStorage.setItem("scores", JSON.stringify([...prevScores, newEntry]));
 
       router.push("/result");
     } else {
