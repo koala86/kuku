@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const validCodes = ["0302", "1234"];
+const validCodes = ["9999", "1234"];
 
 export default function LoginForm() {
   const router = useRouter();
